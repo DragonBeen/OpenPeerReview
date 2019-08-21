@@ -1,0 +1,112 @@
+pragma solidity ^0.5.2;
+
+contract PaperEvaluation{
+    
+    address owner;
+    address [] public evaluator;
+    uint [] public evaluatorScore;
+    address submitter;
+    
+    uint private key;
+    string private storageAddress;
+    mapping(uint=string) public storageDateHash;
+    
+    bool [] private voteEval;
+    
+    bool makeItPublic;
+    
+    constructor(address[] memory eval, uint[] memory evalScore , address submitterAddr, uint restoreKey) public {
+        owner = msg.sender;
+        submitter = submitterAddr;
+        key = restoreKey;
+        
+        evaluator = eval;    
+        evaluatorScore = evalScore;    
+        
+    
+    }
+    
+    To prevent wrong submission.
+    Only pre determined submitter can submit the paper.
+    function submitPaperAddress(string memory theAddress) public returns(string memory){
+        if(msg.sender == submitter){
+            storageAddress = theAddress;
+            return Paper submitted;
+        }
+        else{
+            return Only pre-designated submitter can submit the paper;
+        }
+    }
+    
+    Evaluate the paper by evaluator. 
+    The paper should not be shown to public yet.
+    function evaluateThePaper() public view returns(string memory) {
+        
+        for(uint z=0;zevaluator.length;z++){
+            
+            if(msg.sender == evaluator[z]){
+               return storageAddress;
+            }
+            else{
+                continue;
+            }
+        }
+        
+        return Only evaluator can view the paper for now;
+    }
+    
+    
+    function voteToPublish() public{
+        
+        for(uint i=0;ievaluator.length;i++){
+            
+            if(msg.sender == evaluator[i]){
+               voteEval[i] = true;
+            }
+            else{
+                continue;
+            }
+        }
+        
+        for(uint j=0;jevaluator.length;j++){
+            
+            if(voteEval[j] == true){
+               continue;
+            }
+            else{
+                return;
+            }
+        }
+        
+        makeItPublic = true;
+        return;
+        
+    }
+    
+    Anyone can view the paper after publication
+    function getPaper() public view returns(string memory) {
+        if(makeItPublic == true){
+            return storageAddress;
+        }
+        else{
+            return Not yet published;   
+        }
+    }
+    
+    Anyone can get the paper address after publication
+    function getKey() public view returns(uint) {
+        if(makeItPublic == true){
+            return key;
+        }
+        else{
+            return 0;   
+        }
+    }
+    
+    Anyone can get the number of the evaluator
+    function getEvalnumber() public view returns(uint) {
+        return evaluator.length;
+    }
+    
+    
+}
